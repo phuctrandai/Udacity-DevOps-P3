@@ -1,5 +1,5 @@
 resource "azurerm_network_interface" "test" {
-  name                = var.network_interface_name
+  name                = "${var.application_type}-NetworkInterface"
   location            = var.location
   resource_group_name = var.resource_group
 
@@ -12,7 +12,7 @@ resource "azurerm_network_interface" "test" {
 }
 
 resource "azurerm_linux_virtual_machine" "test" {
-  name                  = var.linux_virtual_machine_name
+  name                  = "${var.application_type}-LinuxVirtalMachine"
   location              = var.location
   resource_group_name   = var.resource_group
   size                  = "Standard_DS2_v2"
