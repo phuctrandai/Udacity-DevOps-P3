@@ -1,29 +1,29 @@
-resource "azurerm_network_interface" "" {
-  name                = ""
-  location            = ""
-  resource_group_name = ""
+resource "azurerm_network_interface" "test" {
+  name                = var.network_interface_name
+  location            = var.location
+  resource_group_name = var.resource_group
 
   ip_configuration {
     name                          = "internal"
-    subnet_id                     = ""
+    subnet_id                     = var.subnet_id_test
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = ""
+    public_ip_address_id          = var.public_ip_address_id
   }
 }
 
-resource "azurerm_linux_virtual_machine" "" {
-  name                = ""
-  location            = ""
-  resource_group_name = ""
-  size                = "Standard_DS2_v2"
-  admin_username      = ""
-  network_interface_ids = []
+resource "azurerm_linux_virtual_machine" "test" {
+  name                  = var.linux_virtual_machine_name
+  location              = var.location
+  resource_group_name   = var.resource_group
+  size                  = "Standard_DS2_v2"
+  admin_username        = "phuctd"
+  network_interface_ids = [azurerm_network_interface.test.id]
   admin_ssh_key {
-    username   = ""
-    public_key = "file("~/.ssh/id_rsa.pub")"
+    username   = "phuctd"
+    public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCbIIqqpNAc11RfbJa7d2Sv5E8FuBofJToFsvw2sRJWtIkgtSLqmkX7/02EsdbeTKPPEeTNPPnxYCg9FYS79Hw45nR2R1p8+erjWZiQ1zy0sqUrIj6Bsi4gwbL51jqLvasGtgdTgDBpdu0L9DKt6C1usbHGsXxZH/KIA5tM1afKNjRiJ+me980cBuo/npWrCjkSusUmlygo/82yN2nIqZ4wiyDzpZk56IXvy9lyMsapLfECZnyvMyh5sCbyaJy/mLGCtNc++hNz9X7paYAnL9mzkcMjdVqdQgYC8r3aO59v8hox6OVfiU1fimEbM1T1x5Vu2Z2tV08+eItIDbo4NkzT"
   }
   os_disk {
-    caching           = "ReadWrite"
+    caching              = "ReadWrite"
     storage_account_type = "Standard_LRS"
   }
   source_image_reference {
