@@ -150,7 +150,6 @@ stages:
   jobs:
   #--------------------------------------------#  
   # Deploy FakeRestAPI Web App
-  # ToDo: Provide <environment name> you created in your DevOps project
   - deployment: FakeRestAPI
     pool:
       vmImage: 'Ubuntu-18.04'      
@@ -181,7 +180,6 @@ stages:
               
   #--------------------------------------------#  
   # Selenium | Functional UI Tests
-  # ToDo: 
   - deployment: VMDeploy
     displayName: Selenium Tests
     environment:
