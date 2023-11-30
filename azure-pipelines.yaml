@@ -17,7 +17,7 @@ variables:
   # Project root folder. Point to the folder containing manage.py file.
   projectRoot: $(System.DefaultWorkingDirectory)
   # Environment name
-  environmentName: 'test'
+  environmentName: 'udacity-devops-p3-LinuxVirtualMachine'
 
 stages:
 #--------------------------------------------#  
@@ -54,7 +54,7 @@ stages:
           archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
           replaceExistingArchive: true
       
-      - upload: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+      - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
         displayName: 'Upload package'
         artifact: applicationPackage
 
@@ -153,7 +153,7 @@ stages:
   - deployment: FakeRestAPI
     pool:
       vmImage: 'Ubuntu-18.04'      
-    environment: $(environmentName)   # ToDo
+    environment: $(environmentName)
     strategy:
       runOnce:
         deploy:
