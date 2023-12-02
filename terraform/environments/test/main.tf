@@ -1,4 +1,8 @@
 provider "azurerm" {
+  tenant_id       = var.tenant_id
+  subscription_id = var.subscription_id
+  client_id       = var.client_id
+  client_secret   = var.client_secret
   skip_provider_registration = true
   features {}
 }
@@ -7,8 +11,13 @@ terraform {
     storage_account_name = "saudacitydevopsp3"
     container_name       = "udacity-devops-p3"
     key                  = "Udacity-DevOps-P3"
-    access_key           = "9HC3U2sGHWHq2GL8qYchVND532njIw595BRass1fcJSn3Ylu1VRZU33FQDY5sBVGHn0PWWsrLXuf+ASt8z/iVA=="
+    access_key           = "2DKfVj1ZMMje7M8b2eoBvyqVeE3BCBZun5S7FpJ+Mf2OmK3qxfhDb0ui9vNSmiPy5kbV1e1PAuh6+AStTFDpGg=="
   }
+}
+module "resource_group" {
+  source         = "../../modules/resourcegroup"
+  resource_group = var.resource_group
+  location       = var.location
 }
 module "network" {
   source           = "../../modules/network"

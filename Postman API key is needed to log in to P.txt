@@ -1,0 +1,2 @@
+Postman API key is needed to log in to Postman CLI
+PMAK-656aa2cbe146c40039144947-9ae84ddfc1051e768c052ee3784e858d08
