@@ -44,6 +44,7 @@ stages:
             displayName: 'Terraform Apply/Refresh'
             inputs:
               script: |
+                cd terraform/environments/test
                 terraform init
                 terraform plan -out=tfplan
                 terraform apply tfplan -auto-approve || terraform refresh
