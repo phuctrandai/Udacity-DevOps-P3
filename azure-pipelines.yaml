@@ -37,6 +37,7 @@ stages:
                 curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
                 sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
                 sudo apt-get update && sudo apt-get install terraform -y
+              workingDirectory: "$(projectRoot)"
 
           - checkout: self
 
@@ -44,15 +45,16 @@ stages:
             displayName: 'Terraform Apply/Refresh'
             inputs:
               script: |
-                cd terraform/environments/test
                 terraform init
                 terraform plan -out=tfplan
                 terraform apply tfplan -auto-approve || terraform refresh
+              workingDirectory: "$(projectRoot)/terraform/environments/test"
 
           - task: CmdLine@2
             displayName: 'Cleanup'
             inputs:
               script: rm -rf tfplan
+              workingDirectory: "$(projectRoot)/terraform/environments/test"
   #--------------------------------------------#
 
   #--------------------------------------------#
