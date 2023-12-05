@@ -20,9 +20,50 @@ variables:
 
 stages:
   #--------------------------------------------#
+  # Use Terraform to create the Infrastructure
+  - stage: Infrastructure
+    jobs:
+      - job: Infrastructure
+        displayName: "Create the Infrastructure"
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(pythonVersion)
+
+          - task: CmdLine@2
+            displayName: 'Install Terraform'
+            inputs: 
+              script: |
+                curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+                sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+                sudo apt-get update && sudo apt-get install terraform -y
+              workingDirectory: "$(projectRoot)"
+
+          - checkout: self
+
+          - task: CmdLine@2
+            displayName: 'Terraform Apply/Refresh'
+            inputs:
+              script: |
+                terraform init
+                terraform plan -out=tfplan
+                terraform apply tfplan -auto-approve || terraform refresh
+              workingDirectory: "$(projectRoot)/terraform/environments/test"
+
+          - task: CmdLine@2
+            displayName: 'Cleanup'
+            inputs:
+              script: rm -rf tfplan
+              workingDirectory: "$(projectRoot)/terraform/environments/test"
+  #--------------------------------------------#
+
+  #--------------------------------------------#
   # BUILD STAGE
   #--------------------------------------------#
   - stage: Build
+    displayName: "Build Packages"
+    dependsOn: Infrastructure
+    condition: succeeded()
     jobs:
       - job: ContinuousIntegration
         steps:
@@ -99,6 +140,7 @@ stages:
               includeRootFolder: false
               archiveType: "zip"
               archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip"
+          
           # JMeter Test Suite - Publish
           - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
             displayName: "Upload Package PerformanceTestSuite"
