@@ -1,5 +1,4 @@
 **/*.tfstate
-**/*.json
 **/*.exe
 # Local .terraform directories
 **/.terraform/*
@@ -24,3 +23,4 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 id_rsa.pub
+id_rsa.pub.pub
