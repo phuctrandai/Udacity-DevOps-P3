@@ -60,6 +60,7 @@ stages:
     condition: succeeded()
     jobs:
       - job: ContinuousIntegration
+        displayName: 'Continuous Integration'
         steps:
           # Postman - Install Newman
           - task: CmdLine@2
@@ -98,7 +99,7 @@ stages:
           # Selenium (UI) Test Suite - Archive the package
           # "ArchiveFiles@2" picks up the web package and archives it.
           - task: ArchiveFiles@2
-            displayName: "Archive UI Tests"
+            displayName: 'Archive UI Tests'
             inputs:
               rootFolderOrFile: "$(projectRoot)/automatedtesting/selenium"
               includeRootFolder: false
@@ -107,13 +108,13 @@ stages:
           
           # Selenium Test Suite - Publish the package
           - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip # Same as the archiveFile artifact above.
-            displayName: "Upload Package UI Tests"
+            displayName: 'Upload Package UI Tests'
             artifact: drop-uitests
 
           #--------------------------------------------#
           # FakeRestAPI - Archive
           - task: ArchiveFiles@2
-            displayName: "Archive FakeRestAPI"
+            displayName: 'Archive FakeRestAPI'
             inputs:
               rootFolderOrFile: "$(projectRoot)/automatedtesting/jmeter/fakerestapi"
               includeRootFolder: false
@@ -122,13 +123,13 @@ stages:
           
           # FakeRestAPI - Publish
           - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
-            displayName: "Upload Package FakeRestAPI"
+            displayName: 'Upload Package FakeRestAPI'
             artifact: drop-fakerestapi
 
           #--------------------------------------------#
           # JMeter (Performance) Test Suite - Archive
           - task: ArchiveFiles@2
-            displayName: "Archive PerformanceTestSuite"
+            displayName: 'Archive PerformanceTestSuite'
             inputs:
               rootFolderOrFile: "$(projectRoot)/automatedtesting/jmeter/perftests"
               includeRootFolder: false
@@ -137,7 +138,7 @@ stages:
           
           # JMeter Test Suite - Publish
           - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
-            displayName: "Upload Package PerformanceTestSuite"
+            displayName: 'Upload Package PerformanceTestSuite'
             artifact: drop-perftests
 
   #--------------------------------------------#
@@ -151,6 +152,7 @@ stages:
       #--------------------------------------------#
       # Deploy FakeRestAPI Web App
       - deployment: FakeRestAPI
+        displayName: 'Deploy FakeRestAPI Web App'
         pool:
           vmImage: "Ubuntu-18.04"
         environment: $(environmentName)
@@ -159,7 +161,7 @@ stages:
             deploy:
               steps:
                 - task: AzureWebApp@1
-                  displayName: "Deploy FakeRestAPI"
+                  displayName: 'Deploy FakeRestAPI'
                   inputs:
                     azureSubscription: "Udacity-DevOps-P3"
                     appType: "webAppLinux"
@@ -169,6 +171,7 @@ stages:
                 #--------------------------------------------#
                 # Run JMeter test suite against the App Service
                 - task: CmdLine@2
+                  displayName: 'Run JMeter test suite against the App Service'
                   inputs:
                     script: |
                       wget "https://apache.mirrors.lucidnetworks.net//jmeter/binaries/apache-jmeter-5.2.1.tgz"
@@ -181,7 +184,7 @@ stages:
       #--------------------------------------------#
       # Selenium | Functional UI Tests
       - deployment: VMDeploy
-        displayName: Selenium Tests
+        displayName: 'Selenium Tests'
         environment:
           name: $(environmentName)
           resourceType: VirtualMachine
@@ -191,9 +194,11 @@ stages:
             deploy:
               steps:
                 - download: current
+                  displayName: 'Download Selenium Package'
                   artifact: drop-uitests
 
                 - task: Bash@3
+                  displayName: 'Run Selenium Functional UI Tests'
                   inputs:
                     targetType: "inline"
                     script: |
