@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="Data Validation Testing" tests="2" time="1.221">
+  <testsuite name="Create Employee" id="975333da-c4ed-4f71-a962-e463ec63a78d" timestamp="2023-12-04T15:09:13.722Z" tests="3" failures="0" errors="0" time="0.920">
+    <testcase name="Status code is 200" time="0.920" classname="DataValidationTesting"/>
+    <testcase name="Response matches JSON schema" time="0.920" classname="DataValidationTesting"/>
+    <testcase name="Response body should contain specific data" time="0.920" classname="DataValidationTesting"/>
+  </testsuite>
+  <testsuite name="Get All Employees" id="2338d05f-d6d9-4bd4-bcde-965ad0fd2607" timestamp="2023-12-04T15:09:13.722Z" tests="3" failures="3" errors="0" time="0.301">
+    <testcase name="Status code is 200" time="0.301" classname="DataValidationTesting">
+      <failure type="AssertionFailure" message="expected response to have status code 200 but got 429">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 73250e44-fdfe-49f8-9f58-2c74d2bb28ce.]]>
+        <![CDATA[Collection name: Data Validation Testing.]]>
+        <![CDATA[Request name: Get All Employees.]]>
+        <![CDATA[Test description: Status code is 200.]]>
+        <![CDATA[Error message: expected response to have status code 200 but got 429.]]>
+        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 429
+   at Object.eval sandbox-script.js:1:2).]]>
+      </failure>
+    </testcase>
+    <testcase name="Response matches JSON schema" time="0.301" classname="DataValidationTesting">
+      <failure type="AssertionFailure" message="Unexpected token '&lt;' at 1:1&#xA;&lt;!DOCTYPE html>&#xA;^">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 73250e44-fdfe-49f8-9f58-2c74d2bb28ce.]]>
+        <![CDATA[Collection name: Data Validation Testing.]]>
+        <![CDATA[Request name: Get All Employees.]]>
+        <![CDATA[Test description: Response matches JSON schema.]]>
+        <![CDATA[Error message: Unexpected token '<' at 1:1
+<!DOCTYPE html>
+^.]]>
+        <![CDATA[Stacktrace: JSONError: Unexpected token '<' at 1:1
+<!DOCTYPE html>
+^
+   at Object.eval sandbox-script.js:2:2).]]>
+      </failure>
+    </testcase>
+    <testcase name="Response body should contain specific data" time="0.301" classname="DataValidationTesting">
+      <failure type="AssertionFailure" message="Unexpected token '&lt;' at 1:1&#xA;&lt;!DOCTYPE html>&#xA;^">
+        <![CDATA[Failed 1 times.]]>
+        <![CDATA[Collection JSON ID: 73250e44-fdfe-49f8-9f58-2c74d2bb28ce.]]>
+        <![CDATA[Collection name: Data Validation Testing.]]>
+        <![CDATA[Request name: Get All Employees.]]>
+        <![CDATA[Test description: Response body should contain specific data.]]>
+        <![CDATA[Error message: Unexpected token '<' at 1:1
+<!DOCTYPE html>
+^.]]>
+        <![CDATA[Stacktrace: JSONError: Unexpected token '<' at 1:1
+<!DOCTYPE html>
+^
+   at Object.eval sandbox-script.js:3:2).]]>
+      </failure>
+    </testcase>
+  </testsuite>
+</testsuites>
