@@ -158,7 +158,7 @@ stages:
       - deployment: FakeRestAPI
         displayName: 'Deploy FakeRestAPI Web App'
         pool:
-          vmImage: "udacity-devops-p3-LinuxImage"
+          vmImage: "ubuntu-latest"
         environment: $(environmentName)
         strategy:
           runOnce:
