@@ -50,6 +50,10 @@ module "publicip" {
   resource_type    = "publicip"
   resource_group   = module.resource_group.resource_group_name
 }
+data "azurerm_image" "test" {
+  name                = var.packer_image_name
+  resource_group_name = var.packer_image_resource_group
+}
 module "vm" {
   source               = "../../modules/vm"
   location             = var.location
@@ -57,4 +61,5 @@ module "vm" {
   resource_group       = module.resource_group.resource_group_name
   public_ip_address_id = module.publicip.public_ip_address_id
   subnet_id_test       = module.network.subnet_id_test
+  source_image_id      = data.azurerm_image.test.id
 }

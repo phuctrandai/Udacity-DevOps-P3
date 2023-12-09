@@ -12,3 +12,14 @@ variable "application_type" {}
 variable "address_prefix_test" {}
 variable "address_space" {}
 variable "address_prefixes" {}
+
+#VM
+variable "packer_image_name" {
+  description = "Name of the Packer image"
+  default     = "udacity-devops-p3-LinuxImage"
+}
+
+variable "packer_image_resource_group" {
+  description = "Resource group name of Packer image"
+  default     = "Udacity-DevOps-P3"
+}
