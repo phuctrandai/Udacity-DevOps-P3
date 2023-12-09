@@ -10,3 +10,8 @@ resource "azurerm_subnet" "test" {
   virtual_network_name = azurerm_virtual_network.test.name
   address_prefixes     = var.address_prefixes
 }
+resource "azurerm_network_watcher" "example" {
+  name                = "${var.application_type}-nwwatcher"
+  location            = var.location
+  resource_group_name = var.resource_group
+}
