@@ -7,15 +7,15 @@ trigger:
   - main
 
 pool:
-  name: "Udacity-DevOps-P3"
+  name: 'myLinuxVM'
 
 variables:
   pythonVersion: '3.7'
-  azureServiceConnectionId: "Udacity-DevOps-P3"
+  azureServiceConnectionId: 'Udacity-DevOps-P3'
   # Project root folder. Point to the folder containing manage.py file.
   projectRoot: $(System.DefaultWorkingDirectory)
   # Environment name
-  environmentName: "udacity-devops-p3-LinuxVirtualMachine"
+  environmentName: "Test"
 
 stages:
   #--------------------------------------------#
