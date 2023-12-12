@@ -20,7 +20,13 @@ resource "azurerm_linux_virtual_machine" "test" {
   admin_password                  = "Password11-+"
   disable_password_authentication = false
   network_interface_ids           = [azurerm_network_interface.test.id]
-  source_image_id = "/subscriptions/46887d31-18dd-4dc7-922d-bfb4ebfa36f1/resourceGroups/Udacity-DevOps-P3/providers/Microsoft.Compute/images/udacity-devops-p3-LinuxImage"
+  
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
 
   os_disk {
     name                 = "${var.application_type}-OsDisk"
