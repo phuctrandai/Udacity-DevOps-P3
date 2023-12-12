@@ -6,7 +6,8 @@ name: Udacity-DevOps-P3
 trigger:
   - main
 
-pool: myLinuxVM
+pool:
+  name: Udacity-DevOps-P3
 
 variables:
   pythonVersion: '3.7'
