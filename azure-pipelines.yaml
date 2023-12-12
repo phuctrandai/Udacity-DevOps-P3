@@ -7,7 +7,7 @@ trigger:
   - main
 
 pool:
-  name: 'Udacity-DevOps-P3'
+  name: 'Azure Pipelines'
 
 variables:
   pythonVersion: '3.7'
