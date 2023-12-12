@@ -6,9 +6,7 @@ name: Udacity-DevOps-P3
 trigger:
   - main
 
-# ToDo: Replace the agent pool name, if you are using Udacity Cloud lab.
-# Otherwise, comment out the line below.
-pool: Udacity-DevOps-P3
+pool: myLinuxVM
 
 variables:
   pythonVersion: '3.7'
