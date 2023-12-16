@@ -21,6 +21,7 @@ stages:
   #--------------------------------------------#
   # Use Terraform to create the Infrastructure
   - stage: Infrastructure
+    displayName: "Create Infrastructure"
     jobs:
       - job: Infrastructure
         displayName: "Create the Infrastructure"
@@ -49,18 +50,94 @@ stages:
                 terraform plan -out=tfplan
                 terraform apply tfplan || terraform refresh
               workingDirectory: "$(projectRoot)/terraform/environments/test"
-  #--------------------------------------------#
-
-  #--------------------------------------------#
-  # BUILD STAGE
+  
   #--------------------------------------------#
   - stage: Build
     displayName: "Build Packages"
     dependsOn: Infrastructure
     condition: succeeded()
     jobs:
-      - job: ContinuousIntegration
-        displayName: 'Continuous Integration'
+      - job: BuildFakeRestAPI
+        displayName: "Build FakeRestAPI"
+        steps:
+          - checkout: self
+            displayName: 'Checkout Source'
+          
+          - task: ArchiveFiles@2
+            displayName: 'Archive FakeRestAPI'
+            inputs:
+              rootFolderOrFile: "$(projectRoot)/automatedtesting/jmeter/fakerestapi"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip"
+
+          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
+            displayName: 'Upload Package FakeRestAPI'
+            artifact: drop-fakerestapi
+
+      - job: BuildSelenium
+        displayName: "Build Selenium Package"
+        steps:
+          # Selenium Test Suite - Archive the package
+          - task: ArchiveFiles@2
+            displayName: 'Archive UI Tests'
+            inputs:
+              rootFolderOrFile: "$(projectRoot)/automatedtesting/selenium"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip"
+          
+          # Selenium Test Suite - Publish the package
+          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip # Same as the archiveFile artifact above.
+            displayName: 'Upload Package UI Tests'
+            artifact: drop-uitests
+      
+      - job: BuildJMeter
+        displayName: "Build JMeter Package"
+        steps:
+          - task: ArchiveFiles@2
+            displayName: 'Archive PerformanceTestSuite'
+            inputs:
+              rootFolderOrFile: "$(projectRoot)/automatedtesting/jmeter/perftests"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip"
+          
+          # JMeter Test Suite - Publish
+          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
+            displayName: 'Upload Package PerformanceTestSuite'
+            artifact: drop-perftests
+  
+  - stage: Deploy
+    displayName: "Deploy Package"
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - deployment: FakeRestAPI
+        displayName: 'Deploy FakeRestAPI'
+        pool:
+          vmImage: "ubuntu-latest"
+        environment: $(environmentName)
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureRmWebAppDeployment@4
+                  displayName: 'Deploy FakeRestAPI'
+                  inputs:
+                    ConnectionType: 'AzureRM'
+                    azureSubscription: 'Udacity-DevOps-P3'
+                    appType: 'webApp'
+                    WebAppName: 'udacity-devops-p3-AppService'
+                    packageForLinux: '$(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip'
+
+  - stage: Testing
+    displayName: "Test Package"
+    dependsOn: Deploy
+    condition: succeeded()
+    jobs:
+      - job: TestPostman
+        displayName: 'Test FakeRestAPI With Postman'
         steps:
           - checkout: self
             displayName: 'Checkout Source'
@@ -98,94 +175,21 @@ stages:
               mergeTestResults: true
               testRunTitle: "Postman - Publish Results"
 
-          #--------------------------------------------#
-          # Selenium (UI) Test Suite - Archive the package
-          # "ArchiveFiles@2" picks up the web package and archives it.
-          - task: ArchiveFiles@2
-            displayName: 'Archive UI Tests'
+      - job: TestJMeter
+        displayName: 'Test FakeRestAPI With JMeter'
+        steps:
+          # Run JMeter test suite against the App Service
+          - task: CmdLine@2
+            displayName: 'Run JMeter test suite against the App Service'
             inputs:
-              rootFolderOrFile: "$(projectRoot)/automatedtesting/selenium"
-              includeRootFolder: false
-              archiveType: "zip"
-              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip"
-          
-          # Selenium Test Suite - Publish the package
-          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip # Same as the archiveFile artifact above.
-            displayName: 'Upload Package UI Tests'
-            artifact: drop-uitests
+              script: |
+                wget "https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.2.tgz"
+                tar -xf apache-jmeter-5.6.2.tgz
+                unzip -o $(Build.BuildId)-perftests.zip
+                ./apache-jmeter-5.6.2/bin/jmeter -n -t PerformanceTestSuite.jmx -j jmeter.log -f
+                cat jmeter.log
+              workingDirectory: $(Pipeline.Workspace)/drop-perftests
 
-          #--------------------------------------------#
-          # FakeRestAPI - Archive
-          - task: ArchiveFiles@2
-            displayName: 'Archive FakeRestAPI'
-            inputs:
-              rootFolderOrFile: "$(projectRoot)/automatedtesting/jmeter/fakerestapi"
-              includeRootFolder: false
-              archiveType: "zip"
-              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip"
-          
-          # FakeRestAPI - Publish
-          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
-            displayName: 'Upload Package FakeRestAPI'
-            artifact: drop-fakerestapi
-
-          #--------------------------------------------#
-          # JMeter (Performance) Test Suite - Archive
-          - task: ArchiveFiles@2
-            displayName: 'Archive PerformanceTestSuite'
-            inputs:
-              rootFolderOrFile: "$(projectRoot)/automatedtesting/jmeter/perftests"
-              includeRootFolder: false
-              archiveType: "zip"
-              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip"
-          
-          # JMeter Test Suite - Publish
-          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
-            displayName: 'Upload Package PerformanceTestSuite'
-            artifact: drop-perftests
-
-  #--------------------------------------------#
-  # DEPLOYMENT STAGE
-  #--------------------------------------------#
-  - stage: Deploy
-    displayName: "Deploy Web App"
-    dependsOn: Build
-    condition: succeeded()
-    jobs:
-      #--------------------------------------------#
-      # Deploy FakeRestAPI Web App
-      - deployment: FakeRestAPI
-        displayName: 'Deploy FakeRestAPI Web App'
-        pool:
-          vmImage: "ubuntu-latest"
-        environment: $(environmentName)
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - task: AzureRmWebAppDeployment@4
-                  displayName: 'Deploy FakeRestAPI'
-                  inputs:
-                    ConnectionType: 'AzureRM'
-                    azureSubscription: 'Udacity-DevOps-P3'
-                    appType: 'webApp'
-                    WebAppName: 'udacity-devops-p3-AppService'
-                    packageForLinux: '$(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip'
-                #--------------------------------------------#
-                # Run JMeter test suite against the App Service
-                - task: CmdLine@2
-                  displayName: 'Run JMeter test suite against the App Service'
-                  inputs:
-                    script: |
-                      wget "https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.2.tgz"
-                      tar -xf apache-jmeter-5.6.2.tgz
-                      unzip -o $(Build.BuildId)-perftests.zip
-                      ./apache-jmeter-5.6.2/bin/jmeter -n -t PerformanceTestSuite.jmx -j jmeter.log -f
-                      cat jmeter.log
-                    workingDirectory: $(Pipeline.Workspace)/drop-perftests
-
-      #--------------------------------------------#
-      # Selenium | Functional UI Tests
       - deployment: VMDeploy
         displayName: 'Selenium Tests'
         environment:
@@ -206,7 +210,6 @@ stages:
                     targetType: "inline"
                     script: |
                       #! /bin/bash
-
                       sudo apt-get upgrade -y
                       sudo apt-get install python3-pip -y
                       sudo apt-get install unzip -y
