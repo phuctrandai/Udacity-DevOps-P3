@@ -1,28 +1,22 @@
 {
 	"id": "e72358fb-4cda-47c5-81c5-19c5dd7934da",
-	"name": "Regression Testing Environment",
+	"name": "Testing Environment",
 	"values": [
 		{
 			"key": "baseUrl",
-			"value": "http://dummy.restapiexample.com",
+			"value": "https://udacity-devops-p3-appservice.azurewebsites.net",
 			"type": "default",
 			"enabled": true
 		},
 		{
-			"key": "name",
-			"value": "Dummy User",
+			"key": "title",
+			"value": "Test Activity",
 			"type": "default",
 			"enabled": true
 		},
 		{
-			"key": "salary",
-			"value": "10000000",
-			"type": "default",
-			"enabled": true
-		},
-		{
-			"key": "age",
-			"value": "25",
+			"key": "dueDate",
+			"value": "2023-12-16T02:47:03.23Z",
 			"type": "default",
 			"enabled": true
 		}

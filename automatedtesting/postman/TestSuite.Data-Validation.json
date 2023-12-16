@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Create Employee",
+			"name": "Create Activity",
 			"event": [
 				{
 					"listen": "test",
@@ -20,28 +20,17 @@
 							"const expectedSchema = {\r",
 							"  \"type\": \"object\",\r",
 							"  \"properties\": {\r",
-							"        \"status\": {\r",
+							"        \"ID\": {\r",
+							"            \"type\": \"integer\"\r",
+							"        },\r",
+							"        \"Title\": {\r",
 							"            \"type\": \"string\"\r",
 							"        },\r",
-							"        \"data\": {\r",
-							"            \"type\": \"object\",\r",
-							"            \"properties\": {\r",
-							"                \"name\": {\r",
-							"                    \"type\": \"string\",\r",
-							"                },\r",
-							"                \"salary\": {\r",
-							"                    \"type\": \"string\"\r",
-							"                },\r",
-							"                \"age\": {\r",
-							"                    \"type\": \"string\"\r",
-							"                },\r",
-							"                \"id\": {\r",
-							"                    \"type\": \"integer\"\r",
-							"                }\r",
-							"            }\r",
-							"        },\r",
-							"        \"message\": {\r",
+							"        \"DueDate\": {\r",
 							"            \"type\": \"string\"\r",
+							"        },\r",
+							"        \"Completed\": {\r",
+							"            \"type\": \"boolean\"\r",
 							"        }\r",
 							"    }\r",
 							"};\r",
@@ -51,9 +40,12 @@
 							"});\r",
 							"\r",
 							"pm.test(\"Response body should contain specific data\", function () {\r",
+							"    var submittedTitle = pm.collectionVariables.get(\"title\");\r",
+							"    var submittedDueDate = pm.collectionVariables.get(\"dueDate\");\r",
+							"    \r",
 							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.status).to.eql(\"success\");\r",
-							"    pm.expect(jsonData.message).to.equal(\"Successfully! Record has been added.\");\r",
+							"    pm.expect(jsonData.Title).to.eql(submittedTitle);\r",
+							"    pm.expect(jsonData.DueDate).to.equal(submittedDueDate);\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -65,7 +57,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"salary\": \"{{salary}}\",\r\n    \"age\": \"{{age}}\"\r\n}",
+					"raw": "{\r\n  \"ID\": 0,\r\n  \"Title\": \"{{title}}\",\r\n  \"DueDate\": \"{{dueDate}}\",\r\n  \"Completed\": false\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -73,21 +65,20 @@
 					}
 				},
 				"url": {
-					"raw": "{{baseUrl}}/api/v1/create",
+					"raw": "{{baseUrl}}/api/Activities",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
-						"v1",
-						"create"
+						"Activities"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Get All Employees",
+			"name": "Get All Activities",
 			"event": [
 				{
 					"listen": "test",
@@ -98,36 +89,22 @@
 							"});\r",
 							"\r",
 							"const expectedSchema = {\r",
-							"  \"type\": \"object\",\r",
-							"  \"properties\": {\r",
-							"    \"status\": {\r",
-							"      \"type\": \"string\"\r",
-							"    },\r",
-							"    \"data\": {\r",
-							"      \"type\": \"array\",\r",
-							"      \"items\": {\r",
-							"        \"type\": \"object\",\r",
-							"        \"properties\": {\r",
-							"          \"id\": {\r",
+							"  \"type\": \"array\",\r",
+							"  \"items\": {\r",
+							"      \"type\": \"object\",\r",
+							"      \"properties\": {\r",
+							"        \"ID\": {\r",
 							"            \"type\": \"integer\"\r",
-							"          },\r",
-							"          \"employee_name\": {\r",
+							"        },\r",
+							"        \"Title\": {\r",
 							"            \"type\": \"string\"\r",
-							"          },\r",
-							"          \"employee_salary\": {\r",
-							"            \"type\": \"integer\"\r",
-							"          },\r",
-							"          \"employee_age\": {\r",
-							"            \"type\": \"integer\"\r",
-							"          },\r",
-							"          \"profile_image\": {\r",
+							"        },\r",
+							"        \"DueDate\": {\r",
 							"            \"type\": \"string\"\r",
-							"          }\r",
+							"        },\r",
+							"        \"Completed\": {\r",
+							"            \"type\": \"boolean\"\r",
 							"        }\r",
-							"      }\r",
-							"    },\r",
-							"    \"message\": {\r",
-							"      \"type\": \"string\"\r",
 							"    }\r",
 							"  }\r",
 							"};\r",
@@ -138,8 +115,11 @@
 							"\r",
 							"pm.test(\"Response body should contain specific data\", function () {\r",
 							"    var jsonData = pm.response.json();\r",
-							"    pm.expect(jsonData.status).to.eql(\"success\");\r",
-							"    pm.expect(jsonData.message).to.equal(\"Successfully! All records has been fetched.\");\r",
+							"    pm.expect(jsonData[0].Title).to.eql(\"Activity 1\");\r",
+							"    pm.expect(jsonData[0].Completed).to.equal(false);\r",
+							"\r",
+							"    pm.expect(jsonData[29].Title).to.eql(\"Activity 30\");\r",
+							"    pm.expect(jsonData[29].Completed).to.equal(true);\r",
 							"});"
 						],
 						"type": "text/javascript"
@@ -150,14 +130,13 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{baseUrl}}/api/v1/employees",
+					"raw": "{{baseUrl}}/api/Activities",
 					"host": [
 						"{{baseUrl}}"
 					],
 					"path": [
 						"api",
-						"v1",
-						"employees"
+						"Activities"
 					]
 				}
 			},
@@ -187,22 +166,17 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://dummy.restapiexample.com",
+			"value": "https://udacity-devops-p3-appservice.azurewebsites.net",
 			"type": "string"
 		},
 		{
-			"key": "name",
-			"value": "Dummy User",
+			"key": "title",
+			"value": "Test Activity",
 			"type": "string"
 		},
 		{
-			"key": "salary",
-			"value": "10000000",
-			"type": "string"
-		},
-		{
-			"key": "age",
-			"value": "25",
+			"key": "dueDate",
+			"value": "2023-12-16T02:47:03.23Z",
 			"type": "string"
 		}
 	]

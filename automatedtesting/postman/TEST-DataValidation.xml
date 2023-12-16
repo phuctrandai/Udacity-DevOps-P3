@@ -1,95 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Data Validation Testing" tests="2" time="0.984">
-  <testsuite name="Create Employee" id="bdc752ae-0153-4670-8460-257e363169c3" timestamp="2023-12-05T15:19:36.060Z" tests="3" failures="3" errors="0" time="0.586">
-    <testcase name="Status code is 200" time="0.586" classname="DataValidationTesting">
-      <failure type="AssertionFailure" message="expected response to have status code 200 but got 429">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: 73250e44-fdfe-49f8-9f58-2c74d2bb28ce.]]>
-        <![CDATA[Collection name: Data Validation Testing.]]>
-        <![CDATA[Request name: Create Employee.]]>
-        <![CDATA[Test description: Status code is 200.]]>
-        <![CDATA[Error message: expected response to have status code 200 but got 429.]]>
-        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 429
-   at Object.eval sandbox-script.js:1:1).]]>
-      </failure>
-    </testcase>
-    <testcase name="Response matches JSON schema" time="0.586" classname="DataValidationTesting">
-      <failure type="AssertionFailure" message="Unexpected token '&lt;' at 1:1&#xA;&lt;!DOCTYPE html>&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: 73250e44-fdfe-49f8-9f58-2c74d2bb28ce.]]>
-        <![CDATA[Collection name: Data Validation Testing.]]>
-        <![CDATA[Request name: Create Employee.]]>
-        <![CDATA[Test description: Response matches JSON schema.]]>
-        <![CDATA[Error message: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^
-   at Object.eval sandbox-script.js:2:1).]]>
-      </failure>
-    </testcase>
-    <testcase name="Response body should contain specific data" time="0.586" classname="DataValidationTesting">
-      <failure type="AssertionFailure" message="Unexpected token '&lt;' at 1:1&#xA;&lt;!DOCTYPE html>&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: 73250e44-fdfe-49f8-9f58-2c74d2bb28ce.]]>
-        <![CDATA[Collection name: Data Validation Testing.]]>
-        <![CDATA[Request name: Create Employee.]]>
-        <![CDATA[Test description: Response body should contain specific data.]]>
-        <![CDATA[Error message: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^
-   at Object.eval sandbox-script.js:3:1).]]>
-      </failure>
-    </testcase>
+<testsuites name="Data Validation Testing" tests="2" time="1.515">
+  <testsuite name="Create Activity" id="532abfa5-941a-422b-8b41-926977f3460d" timestamp="2023-12-16T03:13:50.306Z" tests="3" failures="0" errors="0" time="1.249">
+    <testcase name="Status code is 200" time="1.249" classname="DataValidationTesting"/>
+    <testcase name="Response matches JSON schema" time="1.249" classname="DataValidationTesting"/>
+    <testcase name="Response body should contain specific data" time="1.249" classname="DataValidationTesting"/>
   </testsuite>
-  <testsuite name="Get All Employees" id="0b4bdc34-7251-412b-8814-60af1bb121f5" timestamp="2023-12-05T15:19:36.060Z" tests="3" failures="3" errors="0" time="0.398">
-    <testcase name="Status code is 200" time="0.398" classname="DataValidationTesting">
-      <failure type="AssertionFailure" message="expected response to have status code 200 but got 429">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: 73250e44-fdfe-49f8-9f58-2c74d2bb28ce.]]>
-        <![CDATA[Collection name: Data Validation Testing.]]>
-        <![CDATA[Request name: Get All Employees.]]>
-        <![CDATA[Test description: Status code is 200.]]>
-        <![CDATA[Error message: expected response to have status code 200 but got 429.]]>
-        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 429
-   at Object.eval sandbox-script.js:1:2).]]>
-      </failure>
-    </testcase>
-    <testcase name="Response matches JSON schema" time="0.398" classname="DataValidationTesting">
-      <failure type="AssertionFailure" message="Unexpected token '&lt;' at 1:1&#xA;&lt;!DOCTYPE html>&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: 73250e44-fdfe-49f8-9f58-2c74d2bb28ce.]]>
-        <![CDATA[Collection name: Data Validation Testing.]]>
-        <![CDATA[Request name: Get All Employees.]]>
-        <![CDATA[Test description: Response matches JSON schema.]]>
-        <![CDATA[Error message: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^
-   at Object.eval sandbox-script.js:2:2).]]>
-      </failure>
-    </testcase>
-    <testcase name="Response body should contain specific data" time="0.398" classname="DataValidationTesting">
-      <failure type="AssertionFailure" message="Unexpected token '&lt;' at 1:1&#xA;&lt;!DOCTYPE html>&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: 73250e44-fdfe-49f8-9f58-2c74d2bb28ce.]]>
-        <![CDATA[Collection name: Data Validation Testing.]]>
-        <![CDATA[Request name: Get All Employees.]]>
-        <![CDATA[Test description: Response body should contain specific data.]]>
-        <![CDATA[Error message: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^
-   at Object.eval sandbox-script.js:3:2).]]>
-      </failure>
-    </testcase>
+  <testsuite name="Get All Activities" id="9f34be9a-a524-43cf-aa09-2c361ffd6f59" timestamp="2023-12-16T03:13:50.306Z" tests="3" failures="0" errors="0" time="0.266">
+    <testcase name="Status code is 200" time="0.266" classname="DataValidationTesting"/>
+    <testcase name="Response matches JSON schema" time="0.266" classname="DataValidationTesting"/>
+    <testcase name="Response body should contain specific data" time="0.266" classname="DataValidationTesting"/>
   </testsuite>
 </testsuites>

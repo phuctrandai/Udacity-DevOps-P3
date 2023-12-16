@@ -1,52 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="Regression Testing" tests="2" time="0.950">
-  <testsuite name="Create Employee" id="96b203a1-0270-42a3-8ad9-de24f39e34f7" timestamp="2023-12-04T15:12:00.262Z" tests="4" failures="0" errors="0" time="0.595">
-    <testcase name="Status code is 200" time="0.595" classname="RegressionTesting"/>
-    <testcase name="Response matches JSON schema" time="0.595" classname="RegressionTesting"/>
-    <testcase name="Response time is less than 1000ms" time="0.595" classname="RegressionTesting"/>
-    <testcase name="Content-Type is present" time="0.595" classname="RegressionTesting"/>
+<testsuites name="Regression Testing" tests="2" time="1.518">
+  <testsuite name="Create Activity" id="5b1d7adb-4c2a-4296-958b-266ef959bd21" timestamp="2023-12-16T03:14:47.912Z" tests="4" failures="0" errors="0" time="1.225">
+    <testcase name="Status code is 200" time="1.225" classname="RegressionTesting"/>
+    <testcase name="Response matches JSON schema" time="1.225" classname="RegressionTesting"/>
+    <testcase name="Response time is less than 3000ms" time="1.225" classname="RegressionTesting"/>
+    <testcase name="Content-Type is present" time="1.225" classname="RegressionTesting"/>
   </testsuite>
-  <testsuite name="Get All Employees" id="827be9f5-2fac-4d42-b799-bf9547531feb" timestamp="2023-12-04T15:12:00.262Z" tests="4" failures="3" errors="0" time="0.355">
-    <testcase name="Status code is 200" time="0.355" classname="RegressionTesting">
-      <failure type="AssertionFailure" message="expected response to have status code 200 but got 429">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: e72358fb-4cda-47c5-81c5-19c5dd7934da.]]>
-        <![CDATA[Collection name: Regression Testing.]]>
-        <![CDATA[Request name: Get All Employees.]]>
-        <![CDATA[Test description: Status code is 200.]]>
-        <![CDATA[Error message: expected response to have status code 200 but got 429.]]>
-        <![CDATA[Stacktrace: AssertionError: expected response to have status code 200 but got 429
-   at Object.eval sandbox-script.js:1:2).]]>
-      </failure>
-    </testcase>
-    <testcase name="Response matches JSON schema" time="0.355" classname="RegressionTesting">
-      <failure type="AssertionFailure" message="Unexpected token '&lt;' at 1:1&#xA;&lt;!DOCTYPE html>&#xA;^">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: e72358fb-4cda-47c5-81c5-19c5dd7934da.]]>
-        <![CDATA[Collection name: Regression Testing.]]>
-        <![CDATA[Request name: Get All Employees.]]>
-        <![CDATA[Test description: Response matches JSON schema.]]>
-        <![CDATA[Error message: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^.]]>
-        <![CDATA[Stacktrace: JSONError: Unexpected token '<' at 1:1
-<!DOCTYPE html>
-^
-   at Object.eval sandbox-script.js:2:2).]]>
-      </failure>
-    </testcase>
-    <testcase name="Response time is less than 1000ms" time="0.355" classname="RegressionTesting"/>
-    <testcase name="Content-Type is present" time="0.355" classname="RegressionTesting">
-      <failure type="AssertionFailure" message="expected 'text/html; charset=UTF-8' to include 'application/json'">
-        <![CDATA[Failed 1 times.]]>
-        <![CDATA[Collection JSON ID: e72358fb-4cda-47c5-81c5-19c5dd7934da.]]>
-        <![CDATA[Collection name: Regression Testing.]]>
-        <![CDATA[Request name: Get All Employees.]]>
-        <![CDATA[Test description: Content-Type is present.]]>
-        <![CDATA[Error message: expected 'text/html; charset=UTF-8' to include 'application/json'.]]>
-        <![CDATA[Stacktrace: AssertionError: expected 'text/html; charset=UTF-8' to include 'application/json'
-   at Object.eval sandbox-script.js:4:2).]]>
-      </failure>
-    </testcase>
+  <testsuite name="Get All Activities" id="4d147621-d28b-45de-a87d-f03103bfac5d" timestamp="2023-12-16T03:14:47.912Z" tests="4" failures="0" errors="0" time="0.293">
+    <testcase name="Status code is 200" time="0.293" classname="RegressionTesting"/>
+    <testcase name="Response matches JSON schema" time="0.293" classname="RegressionTesting"/>
+    <testcase name="Response time is less than 3000ms" time="0.293" classname="RegressionTesting"/>
+    <testcase name="Content-Type is present" time="0.293" classname="RegressionTesting"/>
   </testsuite>
 </testsuites>
