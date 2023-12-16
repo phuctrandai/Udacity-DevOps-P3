@@ -1,0 +1,20 @@
+ID,Title,DueDate,Completed
+1,Activity Title 1,2023-12-10,false
+2,Activity Title 2,2023-12-11,false
+3,Activity Title 3,2023-12-12,false
+4,Activity Title 4,2023-12-13,false
+5,Activity Title 5,2023-12-14,false
+6,Activity Title 6,2023-12-15,false
+7,Activity Title 7,2023-12-16,false
+8,Activity Title 8,2023-12-17,false
+9,Activity Title 9,2023-12-18,false
+10,Activity Title 10,2023-12-19,true
+11,Activity Title 11,2023-12-20,true
+12,Activity Title 12,2023-12-21,true
+13,Activity Title 13,2023-12-22,true
+14,Activity Title 14,2023-12-23,true
+15,Activity Title 15,2023-12-24,true
+16,Activity Title 16,2023-12-25,true
+17,Activity Title 17,2023-12-26,true
+18,Activity Title 18,2023-12-27,true
+19,Activity Title 19,2023-12-28,true
