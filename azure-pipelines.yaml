@@ -178,7 +178,7 @@ stages:
             displayName: "Execute JMeter Test Stress Test"
             inputs:
               script: |
-                rmdir StressTestReport
+                rmdir "StressTestReport" /s /q
                 mkdir -p StressTestReport
                 apache-jmeter-5.6.2/bin/jmeter -n -t StressTestSuite.jmx -l test-results.csv -e -o StressTestReport
               workingDirectory: "$(projectRoot)/automatedtesting/jmeter/perftests"
@@ -187,7 +187,7 @@ stages:
             displayName: "Execute JMeter Test Endurance  Test"
             inputs:
               script: |
-                rmdir EnduranceTestReport
+                rmdir "EnduranceTestReport" /s /q
                 mkdir -p EnduranceTestReport
                 apache-jmeter-5.6.2/bin/jmeter -n -t EnduranceTestSuite.jmx -l test-results.csv -e -o EnduranceTestReport
               workingDirectory: "$(projectRoot)/automatedtesting/jmeter/perftests"
@@ -210,7 +210,6 @@ stages:
         environment:
           name: $(environmentName)
           resourceType: VirtualMachine
-          tags: selenium
         strategy:
           runOnce:
             deploy:
@@ -243,8 +242,7 @@ stages:
                       fi
                       echo "Place"
                       pwd
-                      echo "list out"
-                      ls
+
                       # install chrome driver
                       unzip -o chromedriver_linux64.zip
                       sudo mkdir -p /usr/bin/chromedriver
@@ -255,23 +253,12 @@ stages:
                       chromium-browser -version
                       echo "chrome driver"
                       chromedriver --version
-                      
-                      cd ~/
-                      DIR=/home/testuser/app
-                      if [ ! -d "$DIR" ]; then
-                          mkdir app
-                      fi
-                      mv /home/testuser/azagent/_work/1/drop-uitests/$(Build.BuildId)-uitests.zip app
-                      cd app
+
+                      # unzip selenium package
+                      cd $(Pipeline.Workspace)/drop-uitests
                       unzip -o $(Build.BuildId)-uitests.zip
-                      FILE=/home/testuser/app/chromedriver_linux64.zip
-                      if [ ! -f "$FILE" ]; then
-                          LATEST=$(wget -q -O - http://chromedriver.storage.googleapis.com/LATEST_RELEASE)
-                          wget http://chromedriver.storage.googleapis.com/$LATEST/chromedriver_linux64.zip
-                          unzip -o chromedriver_linux64.zip
-                          sudo ln -s $PWD/chromedriver /usr/local/bin/chromedriver
-                      fi
-                      export PATH=$PATH:/home/testuser/app
+
+                      # execute selenium test
                       echo "Starting Selenium Tests"
                       python3 add_remove_from_cart.py >> selenium.log
                       echo "Completed Selenium Tests. Check selenium.log for results."

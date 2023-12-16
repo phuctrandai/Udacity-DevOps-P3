@@ -7,7 +7,7 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 # Start the browser and login with standard_user
 def add_remove_from_cart (user, password):
     # Configure the logger
-    logging.basicConfig(filename='automatedtesting\selenium\selenium.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    logging.basicConfig(filename='selenium.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
     print ('Starting the browser...')
     logging.info("Starting the browser...")
