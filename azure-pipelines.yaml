@@ -168,10 +168,9 @@ stages:
                   inputs:
                     ConnectionType: 'AzureRM'
                     azureSubscription: 'Udacity-DevOps-P3'
-                    appType: 'webAppLinux'
+                    appType: 'webApp'
                     WebAppName: 'udacity-devops-p3-AppService'
                     packageForLinux: '$(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip'
-                    RuntimeStack: 'PYTHON|3.7'
                 #--------------------------------------------#
                 # Run JMeter test suite against the App Service
                 - task: CmdLine@2
