@@ -178,18 +178,22 @@ stages:
             displayName: "Execute JMeter Test Stress Test"
             inputs:
               script: |
+                rm stress-test-results.csv
+                touch stress-test-results.csv
                 rm -r StressTestReport
                 mkdir StressTestReport
-                apache-jmeter-5.6.2/bin/jmeter -n -t StressTestSuite.jmx -l test-results.csv -e -o StressTestReport
+                apache-jmeter-5.6.2/bin/jmeter -n -t StressTestSuite.jmx -l stress-test-results.csv -e -o StressTestReport
               workingDirectory: "$(projectRoot)/automatedtesting/jmeter/perftests"
 
           - task: CmdLine@2
             displayName: "Execute JMeter Test Endurance  Test"
             inputs:
               script: |
+                rm endurance-test-results.csv
+                touch endurance-test-results.csv
                 rm -r EnduranceTestReport
                 mkdir EnduranceTestReport
-                apache-jmeter-5.6.2/bin/jmeter -n -t EnduranceTestSuite.jmx -l test-results.csv -e -o EnduranceTestReport
+                apache-jmeter-5.6.2/bin/jmeter -n -t EnduranceTestSuite.jmx -l endurance-test-results.csv -e -o EnduranceTestReport
               workingDirectory: "$(projectRoot)/automatedtesting/jmeter/perftests"
 
           - task: ArchiveFiles@2
