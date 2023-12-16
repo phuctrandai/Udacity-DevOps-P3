@@ -178,6 +178,7 @@ stages:
             displayName: "Execute JMeter Test Stress Test"
             inputs:
               script: |
+                rmdir StressTestReport
                 mkdir -p StressTestReport
                 apache-jmeter-5.6.2/bin/jmeter -n -t StressTestSuite.jmx -l test-results.csv -e -o StressTestReport
               workingDirectory: "$(projectRoot)/automatedtesting/jmeter/perftests"
@@ -186,6 +187,7 @@ stages:
             displayName: "Execute JMeter Test Endurance  Test"
             inputs:
               script: |
+                rmdir EnduranceTestReport
                 mkdir -p EnduranceTestReport
                 apache-jmeter-5.6.2/bin/jmeter -n -t EnduranceTestSuite.jmx -l test-results.csv -e -o EnduranceTestReport
               workingDirectory: "$(projectRoot)/automatedtesting/jmeter/perftests"
@@ -222,12 +224,38 @@ stages:
                   inputs:
                     targetType: "inline"
                     script: |
-                      #! /bin/bash
+                      #!/bin/bash
+                      sudo add-apt-repository universe
+                      sudo apt-get update
                       sudo apt-get upgrade -y
                       sudo apt-get install python3-pip -y
                       sudo apt-get install unzip -y
+                      sudo snap remove chromium
                       sudo apt-get install -y chromium-browser
                       pip3 install selenium
+
+                      # download chrome driver
+                      FILE=chromedriver_linux64.zip
+                      if [ -f "$FILE" ]; then
+                        echo "$FILE exists."
+                      else
+                        wget https://chromedriver.storage.googleapis.com/112.0.5615.28/chromedriver_linux64.zip
+                      fi
+                      echo "Place"
+                      pwd
+                      echo "list out"
+                      ls
+                      # install chrome driver
+                      unzip -o chromedriver_linux64.zip
+                      sudo mkdir -p /usr/bin/chromedriver
+                      sudo mv chromedriver /usr/bin/chromedriver
+                      sudo chown root:root /usr/bin/chromedriver
+                      sudo chmod +x /usr/bin/chromedriver
+                      export PATH=$PATH:/usr/bin/chromedriver
+                      chromium-browser -version
+                      echo "chrome driver"
+                      chromedriver --version
+                      
                       cd ~/
                       DIR=/home/testuser/app
                       if [ ! -d "$DIR" ]; then
