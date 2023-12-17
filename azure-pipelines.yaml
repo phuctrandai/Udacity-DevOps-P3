@@ -7,7 +7,7 @@ trigger:
   - Test
 
 pool:
-  name: "Udacity DevOps P3"
+  name: "Azure Pipelines"
 
 variables:
   pythonVersion: "3.7"
@@ -15,245 +15,79 @@ variables:
   # Project root folder. Point to the folder containing manage.py file.
   projectRoot: $(System.DefaultWorkingDirectory)
   # Environment name
-  environmentName: "Test 2"
+  environmentName: "Test"
 
 stages:
-  # Use Terraform to create the Infrastructure
-  - stage: Infrastructure
-    displayName: "Create Infrastructure"
+  - stage: Testing
+    displayName: "Test Packages"
     jobs:
-      - job: Infrastructure
-        displayName: "Create the Infrastructure"
-        steps:
-          - task: UsePythonVersion@0
-            inputs:
-              versionSpec: "$(pythonVersion)"
-            displayName: "Use Python $(pythonVersion)"
-
-          - task: CmdLine@2
-            displayName: "Install Terraform"
-            inputs:
-              script: |
-                curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-                sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-                sudo apt-get update && sudo apt-get install terraform -y
-
-          - checkout: self
-            displayName: "Checkout Source"
-
-          - task: CmdLine@2
-            displayName: "Terraform Apply/Refresh"
-            inputs:
-              script: |
-                terraform init
-                terraform plan -out=tfplan
-                terraform apply tfplan || terraform refresh
-              workingDirectory: "$(projectRoot)/terraform/environments/test"
-
-  - stage: Build
-    displayName: "Build Packages"
-    dependsOn: Infrastructure
-    condition: succeeded()
-    jobs:
-      - job: BuildFakeRestAPI
-        displayName: "Build FakeRestAPI"
-        steps:
-          - checkout: self
-            displayName: "Checkout Source"
-
-          - task: ArchiveFiles@2
-            displayName: "Archive FakeRestAPI"
-            inputs:
-              rootFolderOrFile: "$(projectRoot)/automatedtesting/jmeter/fakerestapi"
-              includeRootFolder: false
-              archiveType: "zip"
-              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip"
-
-          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
-            displayName: "Upload Package FakeRestAPI"
-            artifact: drop-fakerestapi
-
-  - stage: Deploy
-    displayName: "Deploy Packages"
-    dependsOn: Build
-    condition: succeeded()
-    jobs:
-      - deployment: FakeRestAPI
-        displayName: "Deploy FakeRestAPI"
-        pool:
-          vmImage: "ubuntu-latest"
-        environment: $(environmentName)
+      - deployment: TestSelenium
+        displayName: "Test www.saucedemo.com With Selenium"
+        environment:
+          name: "Test 2"
+          resourceType: VirtualMachine
         strategy:
           runOnce:
             deploy:
               steps:
-                - task: AzureRmWebAppDeployment@4
-                  displayName: "Deploy FakeRestAPI"
+                - checkout: self
+                  displayName: "Checkout Source"
+
+                - task: CmdLine@2
                   inputs:
-                    ConnectionType: "AzureRM"
-                    azureSubscription: "Udacity-DevOps-P3"
-                    appType: "webApp"
-                    WebAppName: "udacity-devops-p3-AppService"
-                    packageForLinux: "$(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip"
+                    script: |
+                      sudo add-apt-repository universe
+                      sudo apt-get update
+                      sudo apt-get upgrade -y
+                      sudo apt-get install python3-pip -y
+                      sudo apt-get install unzip -y
+                      sudo snap remove chromium
+                      sudo apt-get install -y chromium-browser
+                      pip3 install selenium
+                    workingDirectory: "$(projectRoot)/automatedtesting/selenium"
+                  displayName: "Install Selenium"
 
-  - stage: Testing
-    displayName: "Test Packages"
-    dependsOn: Deploy
-    condition: succeeded()
-    jobs:
-      - job: TestPostman
-        displayName: "Test FakeRestAPI With Postman"
-        steps:
-          - checkout: self
-            displayName: "Checkout Source"
+                - task: CmdLine@2
+                  inputs:
+                    script: |
+                      FILE=chromedriver_linux64.zip
+                      if [ -f "$FILE" ]; then
+                        echo "$FILE exists."
+                      else
+                        wget https://chromedriver.storage.googleapis.com/120.0.6099.71/chromedriver_linux64.zip
+                      fi
+                      echo "Place"
+                      pwd
 
-          # Postman - Install Newman
-          - task: CmdLine@2
-            displayName: Install Newman
-            inputs:
-              script: "sudo npm install -g newman"
-              workingDirectory: $(projectRoot)
+                      # install chrome driver
+                      unzip -o chromedriver_linux64.zip
+                      sudo mkdir -p /usr/bin/chromedriver
+                      sudo mv chromedriver /usr/bin/chromedriver
+                      sudo chown root:root /usr/bin/chromedriver
+                      sudo chmod +x /usr/bin/chromedriver
+                      export PATH=$PATH:/usr/bin/chromedriver
+                      chromium-browser -version
+                      echo "chrome driver"
+                      chromedriver --version
+                    workingDirectory: "$(projectRoot)/automatedtesting/selenium"
+                  displayName: "Install Chrome Driver"
 
-          # Postman Data Validation Test Suite
-          - task: CmdLine@2
-            displayName: Run Data Validation Tests
-            continueOnError: true
-            inputs:
-              script: "newman run TestSuite.Data-Validation.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-DataValidation.xml"
-              workingDirectory: "$(projectRoot)/automatedtesting/postman"
+                - task: CmdLine@2
+                  inputs:
+                    script: |
+                      python3 add_remove_from_cart.py >> selenium.log
+                    workingDirectory: "$(projectRoot)/automatedtesting/selenium"
+                  displayName: "Execute Selenium Test"
 
-          # Postman Regression Test Suite
-          - task: CmdLine@2
-            displayName: Run Regression Tests
-            continueOnError: true
-            inputs:
-              script: "newman run TestSuite.Regression.json -e Test.environment.json --reporters cli,junit --reporter-junit-export TEST-Regression.xml"
-              workingDirectory: "$(projectRoot)/automatedtesting/postman"
+                - task: ArchiveFiles@2
+                  displayName: "Archive Selenium Tests"
+                  inputs:
+                    rootFolderOrFile: "$(projectRoot)/automatedtesting/selenium"
+                    includeRootFolder: false
+                    archiveType: "zip"
+                    archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium-result.zip"
 
-          # Postman - Publish Results
-          - task: PublishTestResults@2
-            displayName: Publish Test Results
-            inputs:
-              testResultsFormat: "JUnit"
-              testResultsFiles: "**/TEST-*.xml"
-              searchFolder: "$(projectRoot)/automatedtesting/postman"
-              mergeTestResults: true
-              testRunTitle: "Postman - Publish Results"
-
-      - job: TestJMeter
-        dependsOn: TestPostman
-        condition: succeeded()
-        displayName: "Test FakeRestAPI With JMeter"
-        steps:
-          - checkout: self
-            displayName: "Checkout Source"
-
-          - task: CmdLine@2
-            inputs:
-              script: |
-                wget "https://dlcdn.apache.org//jmeter/binaries/apache-jmeter-5.6.2.tgz"
-                tar -xf apache-jmeter-5.6.2.tgz
-              workingDirectory: "$(projectRoot)/automatedtesting/jmeter/perftests"
-            displayName: "Install JMeter"
-
-          - task: CmdLine@2
-            displayName: "Execute JMeter Test Stress Test"
-            inputs:
-              script: |
-                rm stress-test-results.csv
-                touch stress-test-results.csv
-                rm -r StressTestReport
-                mkdir StressTestReport
-                apache-jmeter-5.6.2/bin/jmeter -n -t StressTestSuite.jmx -l stress-test-results.csv -e -o StressTestReport
-              workingDirectory: "$(projectRoot)/automatedtesting/jmeter/perftests"
-
-          - task: CmdLine@2
-            displayName: "Execute JMeter Test Endurance  Test"
-            inputs:
-              script: |
-                rm endurance-test-results.csv
-                touch endurance-test-results.csv
-                rm -r EnduranceTestReport
-                mkdir EnduranceTestReport
-                apache-jmeter-5.6.2/bin/jmeter -n -t EnduranceTestSuite.jmx -l endurance-test-results.csv -e -o EnduranceTestReport
-              workingDirectory: "$(projectRoot)/automatedtesting/jmeter/perftests"
-
-          - task: ArchiveFiles@2
-            displayName: "Archive PerformanceTestSuite"
-            inputs:
-              rootFolderOrFile: "$(projectRoot)/automatedtesting/jmeter/perftests"
-              includeRootFolder: false
-              archiveType: "zip"
-              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests-result.zip"
-
-          # JMeter Test Suite - Publish
-          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests-result.zip
-            displayName: "Upload Package PerformanceTestSuite"
-            artifact: drop-perftests-result
-
-      - job: TestSelenium
-        dependsOn: TestJMeter
-        condition: succeeded()
-        displayName: "Test www.saucedemo.com With Selenium"
-        steps:
-          - checkout: self
-            displayName: "Checkout Source"
-
-          - task: CmdLine@2
-            inputs:
-              script: |
-                sudo add-apt-repository universe
-                sudo apt-get update
-                sudo apt-get upgrade -y
-                sudo apt-get install python3-pip -y
-                sudo apt-get install unzip -y
-                sudo snap remove chromium
-                sudo apt-get install -y chromium-browser
-                pip3 install selenium
-              workingDirectory: "$(projectRoot)/automatedtesting/selenium"
-            displayName: "Install Selenium"
-
-          - task: CmdLine@2
-            inputs:
-              script: |
-                FILE=chromedriver_linux64.zip
-                if [ -f "$FILE" ]; then
-                  echo "$FILE exists."
-                else
-                  wget https://chromedriver.storage.googleapis.com/120.0.6099.71/chromedriver_linux64.zip
-                fi
-                echo "Place"
-                pwd
-
-                # install chrome driver
-                unzip -o chromedriver_linux64.zip
-                sudo mkdir -p /usr/bin/chromedriver
-                sudo mv chromedriver /usr/bin/chromedriver
-                sudo chown root:root /usr/bin/chromedriver
-                sudo chmod +x /usr/bin/chromedriver
-                export PATH=$PATH:/usr/bin/chromedriver
-                chromium-browser -version
-                echo "chrome driver"
-                chromedriver --version
-              workingDirectory: "$(projectRoot)/automatedtesting/selenium"
-            displayName: "Install Chrome Driver"
-
-          - task: CmdLine@2
-            inputs:
-              script: |
-                python3 add_remove_from_cart.py >> selenium.log
-              workingDirectory: "$(projectRoot)/automatedtesting/selenium"
-            displayName: "Execute Selenium Test"
-
-          - task: ArchiveFiles@2
-            displayName: "Archive Selenium Tests"
-            inputs:
-              rootFolderOrFile: "$(projectRoot)/automatedtesting/selenium"
-              includeRootFolder: false
-              archiveType: "zip"
-              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium-result.zip"
-
-          # Selenium Test Suite - Publish the package
-          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium-result.zip
-            displayName: "Upload Package Selenium Tests"
-            artifact: drop-selenium-result
+                # Selenium Test Suite - Publish the package
+                - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium-result.zip
+                  displayName: "Upload Package Selenium Tests"
+                  artifact: drop-selenium-result
