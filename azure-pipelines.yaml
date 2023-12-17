@@ -19,78 +19,67 @@ stages:
   - stage: Testing
     displayName: "Test Packages"
     jobs:
-      - deployment: TestSelenium
+      - job: TestSelenium
         displayName: "Test www.saucedemo.com With Selenium"
-        environment:
-          name: $(environmentName)
-          resourceType: VirtualMachine
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - checkout: self
-                  displayName: "Checkout Source"
+        steps:
+          - checkout: self
+            displayName: "Checkout Source"
 
-                - task: CmdLine@2
-                  inputs:
-                    script: |
-                      #!/bin/bash
-                      sudo add-apt-repository universe
-                      sudo apt-get update
-                      sudo apt-get upgrade -y
-                      sudo apt-get install python3-pip -y
-                      sudo apt-get install unzip -y
-                      sudo snap remove chromium
-                      sudo apt-get install -y chromium-browser
-                      pip3 install selenium
+          - task: CmdLine@2
+            inputs:
+              script: |
+                sudo add-apt-repository universe
+                sudo apt-get update
+                sudo apt-get upgrade -y
+                sudo apt-get install python3-pip -y
+                sudo apt-get install unzip -y
+                sudo snap remove chromium
+                sudo apt-get install -y chromium-browser
+                pip3 install selenium
+              workingDirectory: "$(projectRoot)/automatedtesting/selenium"
+            displayName: "Install Selenium"
 
-                      # download chrome driver
-                      FILE=chromedriver_linux64.zip
-                      if [ -f "$FILE" ]; then
-                        echo "$FILE exists."
-                      else
-                        wget https://chromedriver.storage.googleapis.com/112.0.5615.28/chromedriver_linux64.zip
-                      fi
-                      echo "Place"
-                      pwd
-                      echo "list out"
-                      ls
-                      # install chrome driver
-                      unzip -o chromedriver_linux64.zip
-                      sudo mkdir -p /usr/bin/chromedriver
-                      sudo mv chromedriver /usr/bin/chromedriver
-                      sudo chown root:root /usr/bin/chromedriver
-                      sudo chmod +x /usr/bin/chromedriver
-                      export PATH=$PATH:/usr/bin/chromedriver
-                      chromium-browser -version
-                      echo "chrome driver"
-                      chromedriver --version
-                    workingDirectory: "$(projectRoot)/automatedtesting/selenium"
-                  displayName: "Install Selenium"
+          - task: CmdLine@2
+            inputs:
+              script: |
+                FILE=chromedriver_linux64.zip
+                if [ -f "$FILE" ]; then
+                  echo "$FILE exists."
+                else
+                  wget https://chromedriver.storage.googleapis.com/120.0.6099.71/chromedriver_linux64.zip
+                fi
+                echo "Place"
+                pwd
 
-                - task: CmdLine@2
-                  inputs:
-                    script: |
-                      sudo mkdir -p /var/log/selenium
-                      sudo chmod 664 /var/log/selenium
-                      python3 add_remove_from_cart.py > selenium.log
-                      python3 add_remove_from_cart.py
-                      sudo mv selenium.log /var/log/selenium
-                      cd $(System.DefaultWorkingDirectory)
-                      mkdir -p log/selenium
-                      sudo cp /var/log/selenium/selenium.log log/selenium
-                    workingDirectory: "$(projectRoot)/automatedtesting/selenium"
-                  displayName: "Execute Selenium Test"
+                # install chrome driver
+                unzip -o chromedriver_linux64.zip
+                sudo mkdir -p /usr/bin/chromedriver
+                sudo mv chromedriver /usr/bin/chromedriver
+                sudo chown root:root /usr/bin/chromedriver
+                sudo chmod +x /usr/bin/chromedriver
+                export PATH=$PATH:/usr/bin/chromedriver
+                chromium-browser -version
+                echo "chrome driver"
+                chromedriver --version
+              workingDirectory: "$(projectRoot)/automatedtesting/selenium"
+            displayName: "Install Chrome Driver"
 
-                - task: ArchiveFiles@2
-                  displayName: "Archive Selenium Tests"
-                  inputs:
-                    rootFolderOrFile: "$(projectRoot)/automatedtesting/selenium"
-                    includeRootFolder: false
-                    archiveType: "zip"
-                    archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium-result.zip"
+          - task: CmdLine@2
+            inputs:
+              script: |
+                python3 add_remove_from_cart.py >> selenium.log
+              workingDirectory: "$(projectRoot)/automatedtesting/selenium"
+            displayName: "Execute Selenium Test"
 
-                # Selenium Test Suite - Publish the package
-                - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium-result.zip
-                  displayName: "Upload Package Selenium Tests"
-                  artifact: drop-selenium-result
+          - task: ArchiveFiles@2
+            displayName: "Archive Selenium Tests"
+            inputs:
+              rootFolderOrFile: "$(projectRoot)/automatedtesting/selenium"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium-result.zip"
+
+          # Selenium Test Suite - Publish the package
+          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium-result.zip
+            displayName: "Upload Package Selenium Tests"
+            artifact: drop-selenium-result
