@@ -12,9 +12,7 @@ pool:
 variables:
   pythonVersion: "3.7"
   azureServiceConnectionId: "Udacity-DevOps-P3"
-  # Project root folder. Point to the folder containing manage.py file.
   projectRoot: $(System.DefaultWorkingDirectory)
-  # Environment name
   environmentName: "Test"
 
 stages:
@@ -24,7 +22,7 @@ stages:
       - deployment: TestSelenium
         displayName: "Test www.saucedemo.com With Selenium"
         environment:
-          name: "Test 2"
+          name: $(environmentName)
           resourceType: VirtualMachine
         strategy:
           runOnce:
@@ -36,6 +34,7 @@ stages:
                 - task: CmdLine@2
                   inputs:
                     script: |
+                      #!/bin/bash
                       sudo add-apt-repository universe
                       sudo apt-get update
                       sudo apt-get upgrade -y
@@ -44,21 +43,18 @@ stages:
                       sudo snap remove chromium
                       sudo apt-get install -y chromium-browser
                       pip3 install selenium
-                    workingDirectory: "$(projectRoot)/automatedtesting/selenium"
-                  displayName: "Install Selenium"
 
-                - task: CmdLine@2
-                  inputs:
-                    script: |
+                      # download chrome driver
                       FILE=chromedriver_linux64.zip
                       if [ -f "$FILE" ]; then
                         echo "$FILE exists."
                       else
-                        wget https://chromedriver.storage.googleapis.com/120.0.6099.71/chromedriver_linux64.zip
+                        wget https://chromedriver.storage.googleapis.com/112.0.5615.28/chromedriver_linux64.zip
                       fi
                       echo "Place"
                       pwd
-
+                      echo "list out"
+                      ls
                       # install chrome driver
                       unzip -o chromedriver_linux64.zip
                       sudo mkdir -p /usr/bin/chromedriver
@@ -70,12 +66,19 @@ stages:
                       echo "chrome driver"
                       chromedriver --version
                     workingDirectory: "$(projectRoot)/automatedtesting/selenium"
-                  displayName: "Install Chrome Driver"
+                  displayName: "Install Selenium"
 
                 - task: CmdLine@2
                   inputs:
                     script: |
-                      python3 add_remove_from_cart.py >> selenium.log
+                      sudo mkdir -p /var/log/selenium
+                      sudo chmod 664 /var/log/selenium
+                      python3 add_remove_from_cart.py > selenium.log
+                      python3 add_remove_from_cart.py
+                      sudo mv selenium.log /var/log/selenium
+                      cd $(System.DefaultWorkingDirectory)
+                      mkdir -p log/selenium
+                      sudo cp /var/log/selenium/selenium.log log/selenium
                     workingDirectory: "$(projectRoot)/automatedtesting/selenium"
                   displayName: "Execute Selenium Test"
 
