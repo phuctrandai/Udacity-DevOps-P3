@@ -67,6 +67,7 @@ stages:
           - task: CmdLine@2
             inputs:
               script: |
+                sudo chmod +x /usr/bin/chromedriver
                 python3 add_remove_from_cart.py > selenium.log
                 python3 add_remove_from_cart.py
               workingDirectory: "$(projectRoot)/automatedtesting/selenium"
