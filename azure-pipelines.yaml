@@ -29,7 +29,7 @@ stages:
           - task: AzureCLI@2
             displayName: 'Azure CLI - Connect to VM'
             inputs:
-              azureSubscription: 'YourAzureServiceConnection'
+              azureSubscription: 'Udacity-DevOps-P3'
               scriptType: 'bash'
               scriptLocation: 'inlineScript'
               inlineScript: 'az vm run-command invoke -g rs-Udacity-DevOps-P3 -n udacity-devops-p3-LinuxVirtualMachine --command-id RunShellScript --scripts "echo Connected to VM"'
