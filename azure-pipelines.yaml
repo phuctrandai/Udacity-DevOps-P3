@@ -36,45 +36,40 @@ stages:
 
           - script: |
               FILE=chromedriver_linux64.zip
-                if [ -f "$FILE" ]; then
-                  echo "$FILE exists."
-                else
-                  wget https://chromedriver.storage.googleapis.com/120.0.6099.71/chromedriver_linux64.zip
-                fi
-                echo "Place"
-                pwd
+              if [ -f "$FILE" ]; then
+                echo "$FILE exists."
+              else
+                wget https://chromedriver.storage.googleapis.com/120.0.6099.71/chromedriver_linux64.zip
+              fi
+              echo "Place"
+              pwd
 
-                # install chrome driver
-                unzip -o chromedriver_linux64.zip
-                sudo mkdir -p /usr/bin/chromedriver
-                sudo mv chromedriver /usr/bin/chromedriver
-                sudo chown root:root /usr/bin/chromedriver
-                sudo chmod +x /usr/bin/chromedriver
-                export PATH=$PATH:/usr/bin/chromedriver
-                chromium-browser -version
-                echo "chrome driver"
-                chromedriver --version
+              # install chrome driver
+              unzip -o chromedriver_linux64.zip
+              sudo mkdir -p /usr/bin/chromedriver
+              sudo mv chromedriver /usr/bin/chromedriver
+              sudo chown root:root /usr/bin/chromedriver
+              sudo chmod +x /usr/bin/chromedriver
+              export PATH=$PATH:/usr/bin/chromedriver
+              chromium-browser -version
+              echo "chrome driver"
+              chromedriver --version
             displayName: 'Install Chrome and ChromeDriver'
 
           - script: |
               sudo add-apt-repository universe
-                sudo apt-get update
-                sudo apt-get upgrade -y
-                sudo apt-get install python3-pip -y
-                sudo apt-get install unzip -y
-                sudo snap remove chromium
-                sudo apt-get install -y chromium-browser
-                pip3 install selenium
+              sudo apt-get update
+              sudo apt-get upgrade -y
+              sudo apt-get install python3-pip -y
+              sudo apt-get install unzip -y
+              sudo snap remove chromium
+              sudo apt-get install -y chromium-browser
+              pip3 install selenium
             displayName: 'Install and configure Selenium Server'
 
-          - task: AzureFileCopy@4
-            displayName: 'Copy Selenium package to Azure VM'
+          - task: CopyFiles@2
+            displayName: 'Copy Selenium dependencies to Azure VM'
             inputs:
-              SourcePath: '$(projectRoot)/automatedtesting/selenium'
-              azureSubscription: 'Udacity-DevOps-P3'
-              Destination: 'AzureVMs'
-              storage: 'sapipelinedevops'
-              resourceGroup: 'RS-UDACITY-DEVOPS-P3'
-              vmsAdminUserName: 'adminuser'
-              vmsAdminPassword: 'Password11-+'
-              TargetPath: '/'
+              SourceFolder: '$(projectRoot)/automatedtesting/selenium'
+              Contents: '**'
+              TargetFolder: '/'
