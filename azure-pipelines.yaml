@@ -61,17 +61,12 @@ stages:
                 chromium-browser -version
                 echo "chrome driver"
                 chromedriver --version
-              workingDirectory: "$(projectRoot)/automatedtesting/selenium"
-            displayName: "Install Chrome Driver"
 
-          - task: CmdLine@2
-            inputs:
-              script: |
-                sudo chmod +x /usr/bin/chromedriver
-                python3 add_remove_from_cart.py > selenium.log
+                # Execute Selenium Test
+                python3 add_remove_from_cart.py >> selenium.log
                 python3 add_remove_from_cart.py
               workingDirectory: "$(projectRoot)/automatedtesting/selenium"
-            displayName: "Execute Selenium Test"
+            displayName: "Install Chrome Driver"
 
           - task: ArchiveFiles@2
             displayName: "Archive Selenium Tests"
