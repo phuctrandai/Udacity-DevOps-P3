@@ -73,26 +73,6 @@ stages:
             displayName: "Upload Package FakeRestAPI"
             artifact: drop-fakerestapi
 
-      - job: BuildSelenium
-        displayName: "Build Selenium Package"
-        steps:
-          - checkout: self
-            displayName: "Checkout Source"
-
-          # Selenium Test Suite - Archive the package
-          - task: ArchiveFiles@2
-            displayName: "Archive UI Tests"
-            inputs:
-              rootFolderOrFile: "$(projectRoot)/automatedtesting/selenium"
-              includeRootFolder: false
-              archiveType: "zip"
-              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip"
-
-          # Selenium Test Suite - Publish the package
-          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests.zip # Same as the archiveFile artifact above.
-            displayName: "Upload Package UI Tests"
-            artifact: drop-uitests
-
   - stage: Deploy
     displayName: "Deploy Packages"
     dependsOn: Build
@@ -202,68 +182,73 @@ stages:
               rootFolderOrFile: "$(projectRoot)/automatedtesting/jmeter/perftests"
               includeRootFolder: false
               archiveType: "zip"
-              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip"
+              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests-result.zip"
 
           # JMeter Test Suite - Publish
-          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests.zip
+          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-perftests-result.zip
             displayName: "Upload Package PerformanceTestSuite"
-            artifact: drop-perftests
+            artifact: drop-perftests-result
 
-      - deployment: VMDeploy
-        displayName: "Selenium Tests"
-        environment:
-          name: $(environmentName)
-          resourceType: VirtualMachine
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - task: Bash@3
-                  displayName: "Run Selenium Functional UI Tests"
-                  inputs:
-                    targetType: 'inline'
-                    script: |
-                      #!/bin/bash
-                      sudo add-apt-repository universe
-                      sudo apt-get update
-                      sudo apt-get upgrade -y
-                      sudo apt-get install python3-pip -y
-                      sudo apt-get install unzip -y
-                      sudo snap remove chromium
-                      sudo apt-get install -y chromium-browser
-                      pip3 install selenium
-                      
-                      # download chrome driver
-                      FILE=chromedriver_linux64.zip
-                      if [ -f "$FILE" ]; then
-                        echo "$FILE exists."
-                      else
-                        wget https://chromedriver.storage.googleapis.com/112.0.5615.28/chromedriver_linux64.zip
-                      fi
-                      echo "Place"
-                      pwd
-                      
-                      # install chrome driver
-                      unzip -o chromedriver_linux64.zip
-                      sudo mkdir -p /usr/bin/chromedriver
-                      sudo mv chromedriver /usr/bin/chromedriver
-                      sudo chown root:root /usr/bin/chromedriver
-                      sudo chmod +x /usr/bin/chromedriver
-                      export PATH=$PATH:/usr/bin/chromedriver
-                      chromium-browser -version
-                      echo "chrome driver"
-                      chromedriver --version
-                      
-                      # unzip selenium package
-                      cd $(Pipeline.Workspace)/drop-uitests
-                      unzip -o $(Build.BuildId)-uitests.zip
-                      
-                      # execute selenium test
-                      echo "Starting Selenium Tests"
-                      python3 add_remove_from_cart.py >> selenium.log
-                      echo "Completed Selenium Tests. Check selenium.log for results."
-                
-                # Selenium Test Suite - Publish
-                - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests-result.zip
-                  displayName: "Upload Package SeleniumTestSuite"
-                  artifact: drop-uitests-result
+      - job: TestSelenium
+        steps:
+          - checkout: self
+            displayName: "Checkout Source"
+
+          - task: CmdLine@2
+            inputs:
+              script: |
+                sudo add-apt-repository universe
+                sudo apt-get update
+                sudo apt-get upgrade -y
+                sudo apt-get install python3-pip -y
+                sudo apt-get install unzip -y
+                sudo snap remove chromium
+                sudo apt-get install -y chromium-browser
+                pip3 install selenium
+              workingDirectory: "$(projectRoot)/automatedtesting/selenium"
+            displayName: "Install Selenium"
+
+          - task: CmdLine@2
+            inputs:
+              script: |
+                FILE=chromedriver_linux64.zip
+                if [ -f "$FILE" ]; then
+                  echo "$FILE exists."
+                else
+                  wget https://chromedriver.storage.googleapis.com/112.0.5615.28/chromedriver_linux64.zip
+                fi
+                echo "Place"
+                pwd
+
+                # install chrome driver
+                unzip -o chromedriver_linux64.zip
+                sudo mkdir -p /usr/bin/chromedriver
+                sudo mv chromedriver /usr/bin/chromedriver
+                sudo chown root:root /usr/bin/chromedriver
+                sudo chmod +x /usr/bin/chromedriver
+                export PATH=$PATH:/usr/bin/chromedriver
+                chromium-browser -version
+                echo "chrome driver"
+                chromedriver --version
+              workingDirectory: "$(projectRoot)/automatedtesting/selenium"
+            displayName: "Install Chrome Driver"
+
+          - task: CmdLine@2
+            inputs:
+              script: |
+                python3 add_remove_from_cart.py >> selenium.log
+              workingDirectory: "$(projectRoot)/automatedtesting/selenium"
+            displayName: "Execute Selenium Test"
+
+          - task: ArchiveFiles@2
+            displayName: "Archive Selenium Tests"
+            inputs:
+              rootFolderOrFile: "$(projectRoot)/automatedtesting/selenium"
+              includeRootFolder: false
+              archiveType: "zip"
+              archiveFile: "$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium-result.zip"
+
+          # Selenium Test Suite - Publish the package
+          - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-selenium-result.zip
+            displayName: "Upload Package Selenium Tests"
+            artifact: drop-selenium-result
