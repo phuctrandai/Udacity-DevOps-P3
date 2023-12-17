@@ -4,7 +4,7 @@ name: Udacity-DevOps-P3
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 trigger:
-  - main
+  - test
 
 pool:
   name: "Azure Pipelines"
@@ -17,59 +17,36 @@ variables:
   # Environment name
   environmentName: "Test"
 
-stages:
-  - stage: Testing
-    displayName: "Test Packages"
-    jobs:
-      - job: RunSeleniumOnVM
-        steps:
-          - checkout: self
-            displayName: "Checkout Source"
-          
-          - task: AzureCLI@2
-            displayName: 'Azure CLI - Connect to VM'
-            inputs:
-              azureSubscription: 'Udacity-DevOps-P3'
-              scriptType: 'bash'
-              scriptLocation: 'inlineScript'
-              inlineScript: 'az vm run-command invoke -g rs-Udacity-DevOps-P3 -n udacity-devops-p3-LinuxVirtualMachine --command-id RunShellScript --scripts "echo Connected to VM"'
+steps:
+  - checkout: self
+    displayName: "Checkout Source"
 
-          - script: |
-              FILE=chromedriver_linux64.zip
-              if [ -f "$FILE" ]; then
-                echo "$FILE exists."
-              else
-                wget https://chromedriver.storage.googleapis.com/120.0.6099.71/chromedriver_linux64.zip
-              fi
-              echo "Place"
-              pwd
+  - task: AzureCLI@2
+    displayName: 'Azure CLI - Connect to VM'
+    inputs:
+      azureSubscription: 'Udacity-DevOps-P3'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az vm run-command invoke -g rs-Udacity-DevOps-P3 -n udacity-devops-p3-LinuxVirtualMachine --command-id RunShellScript --scripts "echo Connected to VM"'
 
-              # install chrome driver
-              unzip -o chromedriver_linux64.zip
-              sudo mkdir -p /usr/bin/chromedriver
-              sudo mv chromedriver /usr/bin/chromedriver
-              sudo chown root:root /usr/bin/chromedriver
-              sudo chmod +x /usr/bin/chromedriver
-              export PATH=$PATH:/usr/bin/chromedriver
-              chromium-browser -version
-              echo "chrome driver"
-              chromedriver --version
-            displayName: 'Install Chrome and ChromeDriver'
+  - script: |
+      sudo apt-get update
+      sudo apt-get install -y chromium-browser
+      sudo apt-get install -y chromium-chromedriver
+    displayName: 'Install Chrome and ChromeDriver'
 
-          - script: |
-              sudo add-apt-repository universe
-              sudo apt-get update
-              sudo apt-get upgrade -y
-              sudo apt-get install python3-pip -y
-              sudo apt-get install unzip -y
-              sudo snap remove chromium
-              sudo apt-get install -y chromium-browser
-              pip3 install selenium
-            displayName: 'Install and configure Selenium Server'
+  - script: |
+      wget https://selenium-release.storage.googleapis.com/3.141/selenium-server-standalone-3.141.59.jar
+    displayName: 'Install and configure Selenium Server'
 
-          - task: CopyFiles@2
-            displayName: 'Copy Selenium dependencies to Azure VM'
-            inputs:
-              SourceFolder: '$(projectRoot)/automatedtesting/selenium'
-              Contents: '**'
-              TargetFolder: '/'
+  - task: CopyFiles@2
+    displayName: 'Copy Selenium dependencies to Azure VM'
+    inputs:
+      SourceFolder: '$(projectRoot)/automatedtesting/selenium'
+      Contents: '**'
+      TargetFolder: '/home/adminuser/selenium'  # Destination path on the Azure VM
+
+  - script: |
+      cd /home/adminuser/selenium
+      python3 add_remove_from_cart.py >> selenium.log
+    displayName: 'Run Selenium tests on Azure VM'
