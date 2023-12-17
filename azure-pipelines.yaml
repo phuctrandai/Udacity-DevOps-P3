@@ -218,14 +218,10 @@ stages:
           runOnce:
             deploy:
               steps:
-                - download: current
-                  displayName: "Download Selenium Package"
-                  artifact: drop-uitests
-
                 - task: Bash@3
                   displayName: "Run Selenium Functional UI Tests"
                   inputs:
-                    targetType: "inline"
+                    targetType: 'inline'
                     script: |
                       #!/bin/bash
                       sudo add-apt-repository universe
@@ -236,7 +232,7 @@ stages:
                       sudo snap remove chromium
                       sudo apt-get install -y chromium-browser
                       pip3 install selenium
-
+                      
                       # download chrome driver
                       FILE=chromedriver_linux64.zip
                       if [ -f "$FILE" ]; then
@@ -246,7 +242,7 @@ stages:
                       fi
                       echo "Place"
                       pwd
-
+                      
                       # install chrome driver
                       unzip -o chromedriver_linux64.zip
                       sudo mkdir -p /usr/bin/chromedriver
@@ -257,12 +253,17 @@ stages:
                       chromium-browser -version
                       echo "chrome driver"
                       chromedriver --version
-
+                      
                       # unzip selenium package
                       cd $(Pipeline.Workspace)/drop-uitests
                       unzip -o $(Build.BuildId)-uitests.zip
-
+                      
                       # execute selenium test
                       echo "Starting Selenium Tests"
                       python3 add_remove_from_cart.py >> selenium.log
                       echo "Completed Selenium Tests. Check selenium.log for results."
+                
+                # Selenium Test Suite - Publish
+                - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-uitests-result.zip
+                  displayName: "Upload Package SeleniumTestSuite"
+                  artifact: drop-uitests-result
