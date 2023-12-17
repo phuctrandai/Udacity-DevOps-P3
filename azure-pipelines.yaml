@@ -190,6 +190,7 @@ stages:
             artifact: drop-perftests-result
 
       - job: TestSelenium
+        displayName: "Test www.saucedemo.com With Selenium"
         steps:
           - checkout: self
             displayName: "Checkout Source"

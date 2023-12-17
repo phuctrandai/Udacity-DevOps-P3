@@ -12,10 +12,10 @@ def add_remove_from_cart (user, password):
     print ('Starting the browser...')
     logging.info("Starting the browser...")
     # --uncomment when running in Azure DevOps.
-    # options = ChromeOptions()
-    # options.add_argument("--headless") 
-    # driver = webdriver.Chrome(options=options)
-    driver = webdriver.Chrome()
+    options = ChromeOptions()
+    options.add_argument("--headless") 
+    driver = webdriver.Chrome(options=options)
+    # driver = webdriver.Chrome()
 
     print ('Browser started successfully. Navigating to the demo page to login.')
     logging.info("Browser started successfully. Navigating to the demo page to login.")

@@ -1,0 +1,22 @@
+2023-12-17 10:15:13,893 - INFO - Starting the browser...
+2023-12-17 10:15:16,286 - INFO - Browser started successfully. Navigating to the demo page to login.
+2023-12-17 10:15:17,654 - INFO - Login with standard_user and secret_sauce.
+2023-12-17 10:15:17,989 - INFO - Login successfully.
+2023-12-17 10:15:18,044 - INFO - Add Sauce Labs Backpack to cart.
+2023-12-17 10:15:18,142 - INFO - Add Sauce Labs Bike Light to cart.
+2023-12-17 10:15:18,217 - INFO - Add Sauce Labs Bolt T-Shirt to cart.
+2023-12-17 10:15:18,330 - INFO - Add Sauce Labs Fleece Jacket to cart.
+2023-12-17 10:15:18,399 - INFO - Add Sauce Labs Onesie to cart.
+2023-12-17 10:15:18,482 - INFO - Add Test.allTheThings() T-Shirt (Red) to cart.
+2023-12-17 10:15:18,546 - INFO - Add products to cart.
+2023-12-17 10:15:18,548 - INFO - Navigate to cart.
+2023-12-17 10:15:18,645 - INFO - Navigate to cart successfully.
+2023-12-17 10:15:18,645 - INFO - Remove products from cart.
+2023-12-17 10:15:18,688 - INFO - Remove Sauce Labs Backpack from cart.
+2023-12-17 10:15:18,767 - INFO - Remove Sauce Labs Bike Light from cart.
+2023-12-17 10:15:18,847 - INFO - Remove Sauce Labs Bolt T-Shirt from cart.
+2023-12-17 10:15:18,921 - INFO - Remove Sauce Labs Fleece Jacket from cart.
+2023-12-17 10:15:18,990 - INFO - Remove Sauce Labs Onesie from cart.
+2023-12-17 10:15:19,061 - INFO - Remove Test.allTheThings() T-Shirt (Red) from cart.
+2023-12-17 10:15:19,105 - INFO - Remove all products from cart.
+2023-12-17 10:15:19,105 - INFO - Selenium test PASSED.
