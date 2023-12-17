@@ -1,4 +1,3 @@
-timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
 1702778585064,716,GET All Activities,200,OK,Stress Test Suite 1-1,text,true,,3109,189,4,4,http://udacity-devops-p3-AppService.azurewebsites.net/api/Activities,710,0,415
 1702778585159,646,GET All Activities,200,OK,Stress Test Suite 1-2,text,true,,3109,189,4,4,http://udacity-devops-p3-AppService.azurewebsites.net/api/Activities,646,0,328
 1702778585792,270,GET All Activities,200,OK,Stress Test Suite 1-1,text,true,,3109,189,4,4,http://udacity-devops-p3-AppService.azurewebsites.net/api/Activities,270,0,0
