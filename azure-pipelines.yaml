@@ -7,13 +7,13 @@ trigger:
   - Test
 
 pool:
-  name: "Azure Pipelines"
+  name: "Udacity DevOps P3"
 
 variables:
   pythonVersion: "3.7"
   azureServiceConnectionId: "Udacity-DevOps-P3"
   projectRoot: $(System.DefaultWorkingDirectory)
-  environmentName: "Test"
+  environmentName: "Test 2"
 
 stages:
   - stage: Testing
