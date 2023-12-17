@@ -179,7 +179,7 @@
               <connectTime>true</connectTime>
             </value>
           </objProp>
-          <stringProp name="filename">F:\Azure Udacity Learning\Azure DevOps\Project 3\Ensuring-Quality-Releases\automatedtesting\jmeter\perftests\endurance-test-results.csv</stringProp>
+          <stringProp name="filename">.\endurance-test-results.csv</stringProp>
         </ResultCollector>
         <hashTree/>
       </hashTree>

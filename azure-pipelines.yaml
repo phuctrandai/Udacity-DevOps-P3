@@ -141,6 +141,8 @@ stages:
               testRunTitle: "Postman - Publish Results"
 
       - job: TestJMeter
+        dependsOn: TestPostman
+        condition: succeeded()
         displayName: "Test FakeRestAPI With JMeter"
         steps:
           - checkout: self
@@ -190,6 +192,8 @@ stages:
             artifact: drop-perftests-result
 
       - job: TestSelenium
+        dependsOn: TestJMeter
+        condition: succeeded()
         displayName: "Test www.saucedemo.com With Selenium"
         steps:
           - checkout: self
@@ -216,7 +220,7 @@ stages:
                 if [ -f "$FILE" ]; then
                   echo "$FILE exists."
                 else
-                  wget https://chromedriver.storage.googleapis.com/112.0.5615.28/chromedriver_linux64.zip
+                  wget https://chromedriver.storage.googleapis.com/120.0.6099.71/chromedriver_linux64.zip
                 fi
                 echo "Place"
                 pwd
