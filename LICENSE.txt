@@ -69,3 +69,10 @@ Information,5/14/2020 4:11:48 AM,Microsoft-Windows-EventSystem,4625,None,The Eve
 Information,5/13/2020 1:08:42 PM,Microsoft-Windows-EventSystem,4625,None,The EventSystem sub system is suppressing duplicate event log entries for a duration of 86400 seconds.  The suppression timeout can be controlled by a REG_DWORD value named SuppressDuplicateDuration under the following registry key: HKLM\Software\Microsoft\EventSystem\EventLog.
 Information,5/12/2020 3:41:30 PM,Microsoft-Windows-EventSystem,4625,None,The EventSystem sub system is suppressing duplicate event log entries for a duration of 86400 seconds.  The suppression timeout can be controlled by a REG_DWORD value named SuppressDuplicateDuration under the following registry key: HKLM\Software\Microsoft\EventSystem\EventLog.
 
+
+
+Updates are available.
+Security Intelligence Update for Microsoft Defender Antivirus - KB2267602 (Version 1.419.479.0) - Current Channel (Broad).
+2024-10 Cumulative Update for Windows Server 2016 for x64-based Systems (KB5044293).
+Windows Malicious Software Removal Tool x64 - v5.129 (KB890830).
+2024-09 Servicing Stack Update for Windows Server 2016 for x64-based Systems (KB5043124).
